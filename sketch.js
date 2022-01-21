@@ -1,117 +1,97 @@
-var trex, trex_running, trex_collided;
-var ground, invisibleGround, groundImage;
-
-var cloud, cloudsGroup, cloudImage;
-
-var o1, o2, o3, o4, o5, o6;
-
-var newImage;
+var b, enemyImage, ballImage, scene, ball, alien1, alien2, alien3, score=0, opscore=0, speed=5
 
 function preload(){
-  trex_running = loadAnimation("trex1.png","trex3.png","trex4.png");
-  trex_collided = loadAnimation("trex_collided.png");
   
-  groundImage = loadImage("ground2.png");
+  b = loadImage("b.png");
+  enemyImage = loadImage("alien.png");
+  ballImage = loadImage("ball.png");
   
-  cloudImage = loadImage("cloud.png");
- 
-  o1 = loadImage("obstacle1.png");
-  o2 = loadImage("obstacle2.png");
-  o3 = loadImage("obstacle3.png");
-  o4 = loadImage("obstacle4.png");
-  o5 = loadImage("obstacle5.png");
-  o6 = loadImage("obstacle6.png");
 }
 
-function setup() {
-  createCanvas(600, 200);
 
-  trex = createSprite(50,160,20,50);
-  trex.addAnimation("running", trex_running);
-  // trex.addAnimation("collided",trex_collided)
-  trex.scale = 0.5;
+
+function setup() {
+  createCanvas(400, 400);
   
-  ground = createSprite(200,180,400,20);
-  ground.addImage("ground",groundImage);
-  ground.x = ground.width /2;
-  ground.velocityX = -4;
+  scene = createSprite(200,200);
+  scene.addImage(b)
+  ball = createSprite(200,345,200,345)
+  ball.addImage(ballImage)
+  ball.scale=0.1
+
+  alien1 = createSprite(200,280,10,10)
+  alien2 = createSprite(200,170,10,10)
+  alien3 = createSprite(200,50,10,10)
+  alien1.addImage(enemyImage)
+  alien2.addImage(enemyImage)
+  alien3.addImage(enemyImage)
+
+  alien1.scale=0.3
+  alien2.scale=0.3
+  alien3.scale=0.3
+
+
   
-  invisibleGround = createSprite(200,190,400,10);
-  invisibleGround.visible = false;
-  
-  console.log("Hello"+ 5)
-  
+   score = 0    
 }
 
 function draw() {
-  background(180);
-  
-  
-  if(keyDown("space")&& trex.y >= 150) {
-    trex.velocityY = -10;
-  }
-  if(keyDown("w")) {
-    trex.velocityY = -10;
-  }
-  
-  
-  trex.velocityY = trex.velocityY + 0.8
-  
-  if (ground.x < 0){
-    ground.x = ground.width/2;
-  }
-  
-  trex.collide(invisibleGround);
-  
-  //spawn the clouds
-  spawnClouds();
-  spawnObstacle();
+ background(0);
+ createEdgeSprites()
 
-  drawSprites();
-}
+ alien1.x=alien1.x+speed
+ alien2.x=alien2.x-speed
+ alien3.x=alien3.x+speed
 
-function spawnClouds() {
-  //write code here to spawn the clouds
-  if (frameCount % 60 === 0) {
-    cloud = createSprite(600,100,40,10);
-    cloud.addImage(cloudImage)
-    cloud.y = Math.round(random(10,60))
-    cloud.scale = 0.4;
-    cloud.velocityX = -3;
-    
-    
-    //assigning lifetime to the variable
-    cloud.lifetime = 200
-    
-    //adjust the depth
-    cloud.depth = trex.depth
-    trex.depth = trex.depth + 1;
-    }
-}
-
- function spawnObstacle(){
-   if (frameCount % 60 === 0){
-     var obstacle = createSprite(600, 165, 10, 40);
-     obstacle.velocityX = -6;
-     var rand = Math.round(random(1, 6));
-     switch(rand){
-       case 1: obstacle.addImage(o1)
-       break;
-       case 2: obstacle.addImage(o2)
-       break;
-       case 3: obstacle.addImage(o3)
-       break;
-       case 4: obstacle.addImage(o4)
-       break;
-       case 5: obstacle.addImage(o5)
-       break;
-       case 6: obstacle.addImage(o6)
-       break;
-       default:break;
-     }
-     obstacle.scale = 0.5;
-     obstacle.lifetime = 100; 
-
-   }
+ if(alien1.x<0 || alien1.x>width)
+ {
+   speed=speed*-1
  }
+
+
+
+if(keyDown(UP_ARROW)){
+  ball.y=ball.y-3
+}
+
+if(keyDown(DOWN_ARROW)){
+  ball.y=ball.y+3
+}
+
+if(keyDown(LEFT_ARROW)){
+  ball.x=ball.x-3
+}
+
+if(keyDown(RIGHT_ARROW)){
+  ball.x=ball.x+3
+}
+
+if(ball.isTouching(alien1)|| ball.isTouching(alien2)|| ball.isTouching(alien3)){
+    ball.x=200
+  ball.y=350
+  opscore = opscore+1
+}
+if(ball.y<0){
+  ball.x=200
+  ball.y=345
+  score=score+1
+}
+
+
+drawSprites();
+textSize(15)
+  fill("Yellow")
+  text("Humans:"+score,328,30);
+  
+
+textSize(15)
+  fill("Yellow")
+  text("Aliens:"+opscore,5,30);
+  
+
+    
+
+}
+
+
 
